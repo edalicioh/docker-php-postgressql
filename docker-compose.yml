@@ -1,0 +1,39 @@
+version: "3"
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  ### PHP  ################################################
+  webserver-teste:
+    build:
+      context: ./bin/php
+    container_name: php-teste
+    restart: always
+    networks:
+      - backend
+    ports:
+      - 8880:80
+      - 444:443
+    volumes:
+      - ./www:/var/www/html
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./config/vhosts:/etc/apache2/sites-enabled
+      - ./logs/apache2:/var/log/apache2
+
+  ### PostgreSQL ###########################################
+  postgres-teste:
+    container_name: postgres-teste
+    hostname: postgres-teste
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: senha
+      PGDATA: /var/lib/postgres/data/pgdata
+    volumes:
+      - ./data/postgres:/var/lib/postgres/data/pgdata
+    ports:
+      - 5433:5432
+    networks:
+      - backend
